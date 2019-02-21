@@ -13,7 +13,7 @@ setup(
     url='',      # 包的主页
     packages=['troy_platform'],                 # 包
     install_requires=[
-        'prompt_toolkit', 'terminaltables'],
+        'prompt_toolkit', 'terminaltables', 'art'],
     entry_points={
         'console_scripts': [
             'ptp=troy_platform.__main__:main',

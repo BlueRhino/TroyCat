@@ -1,20 +1,27 @@
 from art import text2art
-from prompt_toolkit import prompt
+from prompt_toolkit import prompt, print_formatted_text
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 
-from troy_platform.tools.socket_client import connect_monitor
+from troy_platform.tools.socket_client import SocketClient
 
 
 def main():
-    print(text2art('Troy Platform'))
+    print_formatted_text(text2art('Troy Platform'))
     history = FileHistory('prompt_history/main')
     while True:
-        cmd = prompt('tp>>>', history=history,
-                     completer=WordCompleter(['socket2monitor']))
+        try:
+            cmd = prompt('tp>>>', history=history,
+                         completer=WordCompleter(['SocketClient'], ignore_case=True, match_middle=True))
+        except KeyboardInterrupt:
+            print_formatted_text(text2art('BYE'))
+            break
+        except EOFError:
+            print_formatted_text(text2art('BYE'))
+            break
         if cmd:
-            if cmd == 'socket2monitor':
-                connect_monitor()
+            if cmd == 'SocketClient':
+                SocketClient().start()
 
 
 if __name__ == '__main__':
