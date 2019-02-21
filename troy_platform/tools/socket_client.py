@@ -4,31 +4,37 @@ from socket import socket
 from prompt_toolkit import prompt, print_formatted_text
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
-from prompt_toolkit.styles import Style
 from terminaltables import AsciiTable
 
-history = FileHistory('prompt_history/socket2monitor')
-history_send2monitor = FileHistory('prompt_history/socket2monitor_send2monitor')
+from troy_platform.common.cli.Style import style
+from troy_platform.common.cli.completer import NestedCompleter
+
+history = FileHistory('prompt_history/SocketClient')
+history_send2monitor = FileHistory('prompt_history/SocketClient_Inner')
 
 
 class SocketClient:
-    style = Style.from_dict({
-        'completion-menu.completion': 'bg:#008888 #ffffff',
-        'completion-menu.completion.current': 'bg:#00aaaa #000000',
-        'scrollbar.background': 'bg:#88aaaa',
-        'scrollbar.button': 'bg:#222222',
-    })
 
     def __init__(self):
         self.rhosts = '127.0.0.1'
         self.rport = 8080
         self.internal_commands = {
-            'show': ('show some info', self.show),
-            'set': ('set options', self.set_parameter),
-            'run': ('run', self.connect_monitor),
+            'show': self.__show,
+            'set': self.__set_parameter,
+            'run': self.__connect,
+        }
+        self.words_dic = {
+            'show': ['rhosts', 'rport'],
+            'set': None,
+            'run': None,
+        }
+        self.meta_dict = {
+            'show': 'show info',
+            'set': 'set options',
+            'run': 'run',
         }
 
-    def set_parameter(self, parameter):
+    def __set_parameter(self, parameter):
         parameter_arr = str(parameter).strip().split(" ")
         if len(parameter_arr) == 2:
             try:
@@ -41,11 +47,12 @@ class SocketClient:
         else:
             print_formatted_text('set parameter error')
 
-    def switch_command(self):
+    def start(self):
         while True:
             try:
                 cmd = prompt('(socket2monitor)>>>', history=history,
-                             completer=WordCompleter(list(self.internal_commands)), style=SocketClient.style)
+                             completer=NestedCompleter(words_dic=self.words_dic,
+                                                       meta_dict=self.meta_dict), style=style)
             except KeyboardInterrupt:
                 print_formatted_text("ControlC!")
                 break
@@ -66,18 +73,18 @@ class SocketClient:
             if cmd in self.internal_commands:
                 if arg:
                     try:
-                        self.internal_commands[cmd][1](arg)
+                        self.internal_commands[cmd](arg)
                     except Exception as e:
                         print_formatted_text(e)
                 else:
                     try:
-                        self.internal_commands[cmd][1]()
+                        self.internal_commands[cmd]()
                     except Exception as e:
                         print_formatted_text(e)
             else:
                 print_formatted_text('Unknown Command!!')
 
-    def show(self, flag):
+    def __show(self, flag):
         if str(flag).lower() == 'options':
             info_table = [
                 ['\nname', '\nCurrent Setting', '\nRequired', '\nDescription'],
@@ -91,7 +98,7 @@ class SocketClient:
         else:
             print_formatted_text("Unknown Command " + flag)
 
-    def connect_monitor(self):
+    def __connect(self):
         sc = socket()
         charset_receive = 'utf-8'
         charset_send = 'utf-8'
@@ -112,7 +119,7 @@ class SocketClient:
                         break
                 cmd = prompt(response, history=history_send2monitor,
                              completer=WordCompleter(['_set_charset_receive', '_set_charset_send']),
-                             style=SocketClient.style)
+                             style=style)
                 cmd = str(cmd)
                 if cmd.strip().startswith('_'):
                     cmd_arr = cmd.split()
@@ -134,4 +141,4 @@ class SocketClient:
 
 
 if __name__ == "__main__":
-    SocketClient().switch_command()
+    SocketClient().start()
