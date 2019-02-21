@@ -11,7 +11,7 @@ history = FileHistory('prompt_history/socket2monitor')
 history_send2monitor = FileHistory('prompt_history/socket2monitor_send2monitor')
 
 
-class Socket2Monitor:
+class SocketClient:
     style = Style.from_dict({
         'completion-menu.completion': 'bg:#008888 #ffffff',
         'completion-menu.completion.current': 'bg:#00aaaa #000000',
@@ -45,7 +45,7 @@ class Socket2Monitor:
         while True:
             try:
                 cmd = prompt('(socket2monitor)>>>', history=history,
-                             completer=WordCompleter(list(self.internal_commands)), style=Socket2Monitor.style)
+                             completer=WordCompleter(list(self.internal_commands)), style=SocketClient.style)
             except KeyboardInterrupt:
                 print_formatted_text("ControlC!")
                 break
@@ -112,7 +112,7 @@ class Socket2Monitor:
                         break
                 cmd = prompt(response, history=history_send2monitor,
                              completer=WordCompleter(['_set_charset_receive', '_set_charset_send']),
-                             style=Socket2Monitor.style)
+                             style=SocketClient.style)
                 cmd = str(cmd)
                 if cmd.strip().startswith('_'):
                     cmd_arr = cmd.split()
@@ -134,4 +134,4 @@ class Socket2Monitor:
 
 
 if __name__ == "__main__":
-    Socket2Monitor().switch_command()
+    SocketClient().switch_command()

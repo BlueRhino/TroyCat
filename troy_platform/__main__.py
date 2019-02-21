@@ -3,7 +3,7 @@ from prompt_toolkit import prompt
 from prompt_toolkit.completion import WordCompleter
 from prompt_toolkit.history import FileHistory
 
-from prompt_toolkit_play.tools.socket2monitor import connect_monitor
+from troy_platform.tools.socket_client import connect_monitor
 
 
 def main():
