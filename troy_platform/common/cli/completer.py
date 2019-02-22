@@ -52,7 +52,7 @@ class NestedCompleter(Completer):
                     return []
             except:
                 return []
-        return list(current_dic)
+        return list(current_dic) if current_dic else []
 
 
 if __name__ == '__main__':

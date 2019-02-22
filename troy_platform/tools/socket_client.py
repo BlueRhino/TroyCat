@@ -24,8 +24,8 @@ class SocketClient:
             'run': self.__connect,
         }
         self.words_dic = {
-            'show': ['rhosts', 'rport'],
-            'set': None,
+            'show': ['options'],
+            'set': ['rhosts', 'rport'],
             'run': None,
         }
         self.meta_dict = {
@@ -85,7 +85,7 @@ class SocketClient:
                 print_formatted_text('Unknown Command!!')
 
     def __show(self, flag):
-        if str(flag).lower() == 'options':
+        if str(flag).strip().lower() == 'options':
             info_table = [
                 ['\nname', '\nCurrent Setting', '\nRequired', '\nDescription'],
                 ['RHOSTS', self.rhosts, 'yes', 'The target address'],
