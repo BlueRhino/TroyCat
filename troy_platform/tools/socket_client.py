@@ -1,3 +1,4 @@
+import os
 import time
 from socket import socket
 
@@ -9,8 +10,11 @@ from terminaltables import AsciiTable
 from troy_platform.common.cli.Style import style
 from troy_platform.common.cli.completer import NestedCompleter
 
-history = FileHistory('prompt_history/tools/SocketClient')
-history_send2monitor = FileHistory('prompt_history/tools/SocketClient_Inner')
+history_path = 'prompt_history/tools'
+if not os.path.exists(history_path):
+    os.makedirs(history_path)
+history = FileHistory(history_path + '/SocketClient')
+history_send2monitor = FileHistory(history_path + '/SocketClient_Inner')
 
 
 class SocketClient:

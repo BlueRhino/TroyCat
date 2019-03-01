@@ -1,3 +1,5 @@
+import os
+
 from libnmap.parser import NmapParser, NmapParserException
 from libnmap.process import NmapProcess
 from prompt_toolkit import prompt, print_formatted_text
@@ -7,7 +9,10 @@ from terminaltables import AsciiTable
 from troy_platform.common.cli.Style import style
 from troy_platform.common.cli.completer import NestedCompleter
 
-history = FileHistory('prompt_history/info_gathering/NMap')
+history_path = 'prompt_history/info_gathering'
+if not os.path.exists(history_path):
+    os.makedirs(history_path)
+history = FileHistory(history_path + '/NMap')
 
 
 class NMap:
@@ -23,7 +28,8 @@ class NMap:
         self.words_dic = {
             'show': ['options'],
             'set': {'rhosts': None,
-                    'options': ['-sS', '-sT', '-sU', '-sY', '-sN', '-sF', '-sX', '-sA', '-sW', '-sM', '-sZ', '-sO',
+                    'options': ['-sS', '-sT', '-sU', '-sY', '-sN', '-sF', '-sX', '-sA', '-sW',
+                                '-sM', '-sZ', '-sO',
                                 '-sP', '-sI',
                                 '-sR', '-sL', '-p 80']},
             'run': None,
@@ -148,7 +154,8 @@ class NMap:
                 ['\nPORT', '\nprotocol', '\nSTATE', '\nSERVICE'],
             ]
             for service in host.services:
-                res_table.append([str(service.port), service.protocol, service.state, service.service])
+                res_table.append(
+                    [str(service.port), service.protocol, service.state, service.service])
             table = AsciiTable(res_table)
             print_formatted_text(table.table)
         print_formatted_text(nmap_report.summary)

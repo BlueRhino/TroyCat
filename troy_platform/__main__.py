@@ -1,3 +1,5 @@
+import os
+
 from art import text2art
 from prompt_toolkit import prompt, print_formatted_text
 from prompt_toolkit.history import FileHistory
@@ -32,7 +34,10 @@ def print_help(cmd: str):
 
 
 def main():
-    print_formatted_text(text2art('Troy Platform'))
+    print(text2art('Troy Platform'))
+    history_path = 'prompt_history'
+    if not os.path.exists(history_path):
+        os.mkdir(history_path)
     history = FileHistory('prompt_history/main')
     while True:
         try:
