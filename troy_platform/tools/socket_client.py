@@ -9,13 +9,18 @@ from terminaltables import AsciiTable
 from troy_platform.common.cli.Style import style
 from troy_platform.common.cli.completer import NestedCompleter
 
-history = FileHistory('prompt_history/SocketClient')
-history_send2monitor = FileHistory('prompt_history/SocketClient_Inner')
+history = FileHistory('prompt_history/tools/SocketClient')
+history_send2monitor = FileHistory('prompt_history/tools/SocketClient_Inner')
 
 
 class SocketClient:
+    """
+    Connect server by using TCP socket
+    """
 
     def __init__(self):
+        """
+        """
         self.rhosts = '127.0.0.1'
         self.rport = 8080
         self.internal_commands = {
@@ -48,6 +53,14 @@ class SocketClient:
             print_formatted_text('set parameter error')
 
     def start(self):
+        """
+           run client.
+           How To Use:
+           1.Set parameters by using 'set';
+           2.Connect service by using 'run';
+           ----------------------------------
+           The 'show' command is used to view current parameters
+        """
         while True:
             try:
                 cmd = prompt('(socket2monitor)>>>', history=history,
