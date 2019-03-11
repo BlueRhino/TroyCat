@@ -1,1 +1,2 @@
-# troy_platform_python
+# TroyCat
+TroyCat is penetration testing toolkit just for fun.
