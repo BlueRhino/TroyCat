@@ -28,9 +28,9 @@ class SocketClient:
         self.rhosts = '127.0.0.1'
         self.rport = 8080
         self.internal_commands = {
-            'show': self.__show,
-            'set': self.__set_parameter,
-            'run': self.__connect,
+            'show': self._show,
+            'set': self._set_parameter,
+            'run': self._connect,
         }
         self.words_dic = {
             'show': ['options'],
@@ -43,7 +43,7 @@ class SocketClient:
             'run': 'run',
         }
 
-    def __set_parameter(self, parameter):
+    def _set_parameter(self, parameter):
         parameter_arr = str(parameter).strip().split(" ")
         if len(parameter_arr) == 2:
             try:
@@ -101,7 +101,7 @@ class SocketClient:
             else:
                 print_formatted_text('Unknown Command!!')
 
-    def __show(self, flag):
+    def _show(self, flag):
         if str(flag).strip().lower() == 'options':
             info_table = [
                 ['\nname', '\nCurrent Setting', '\nRequired', '\nDescription'],
@@ -115,7 +115,7 @@ class SocketClient:
         else:
             print_formatted_text("Unknown Command " + flag)
 
-    def __connect(self):
+    def _connect(self):
         sc = socket()
         charset_receive = 'utf-8'
         charset_send = 'utf-8'

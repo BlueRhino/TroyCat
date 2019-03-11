@@ -23,7 +23,7 @@ class NestedCompleter(Completer):
         text_before_cursor = str(text_before_cursor)
         text_arr = text_before_cursor.split(' ')
         last_words = text_arr[-1]
-        words = self.__get_current_words(text_arr[:-1])
+        words = self._get_current_words(text_arr[:-1])
 
         def word_matches(word):
             """ True when the word before the cursor matches. """
@@ -40,7 +40,7 @@ class NestedCompleter(Completer):
                 display_meta = self.meta_dict.get(a, '')
                 yield Completion(a, -len(last_words), display_meta=display_meta)
 
-    def __get_current_words(self, text_arr):
+    def _get_current_words(self, text_arr):
         current_dic = self.words_dic
         for tmp in text_arr:
             if tmp == ' ' or tmp == '':

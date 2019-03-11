@@ -82,15 +82,15 @@ class NMap:
                 arg = None
             cmd = cmd.lower()
             if cmd == 'set':
-                self.__set_parameter(arg)
+                self._set_parameter(arg)
             elif cmd == 'show':
-                self.__show(arg)
+                self._show(arg)
             elif cmd == 'run':
-                self.__run()
+                self._run()
             else:
                 print_formatted_text('Unknown Command!!')
 
-    def __show(self, flag):
+    def _show(self, flag):
         if str(flag).strip().lower() == 'options':
             info_table = [
                 ['\nname', '\nCurrent Setting', '\nRequired', '\nDescription'],
@@ -104,7 +104,7 @@ class NMap:
         else:
             print_formatted_text("Unknown Command " + flag)
 
-    def __set_parameter(self, parameter):
+    def _set_parameter(self, parameter):
         parameter_arr = str(parameter).strip().split(" ", maxsplit=1)
         if len(parameter_arr) == 2:
             try:
@@ -117,23 +117,24 @@ class NMap:
         else:
             print_formatted_text('set parameter error')
 
-    def __run(self):
+    def _run(self):
         try:
-            nm = NmapProcess(self.rhosts, options=self.options, event_callback=self.__run_callback)
+            nm = NmapProcess(self.rhosts, options=self.options, event_callback=self._run_callback)
             rc = nm.run()
             if rc != 0:
                 print_formatted_text("nmap scan failed: {0}".format(nm.stderr))
             else:
                 try:
                     report = NmapParser.parse(nm.stdout)
-                    NMap.__print_report(report)
+                    NMap._print_report(report)
                 except NmapParserException as e:
                     print_formatted_text("Exception raised while parsing scan: {0}".format(e.msg))
         except Exception as e:
             print_formatted_text(e)
 
+
     @staticmethod
-    def __print_report(nmap_report):
+    def _print_report(nmap_report):
         print_formatted_text("Starting Nmap {0} ( http://nmap.org ) at {1}".format(
             nmap_report.version,
             nmap_report.started))
@@ -161,7 +162,7 @@ class NMap:
         print_formatted_text(nmap_report.summary)
 
     @staticmethod
-    def __run_callback(a):
+    def _run_callback(a):
         task = a.current_task
         if task:
             print("Task {0} ({1}): ETC: {2} DONE: {3}%".format(task.name,
