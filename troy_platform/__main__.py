@@ -6,12 +6,12 @@ from prompt_toolkit.history import FileHistory
 
 from troy_platform.common.cli.Style import style
 from troy_platform.common.cli.completer import NestedCompleter
-from troy_platform.info_gathering.namp import NMap
+from troy_platform.info_gathering.namp import TPNMap
 from troy_platform.tools.socket_client import SocketClient
 
 commands_mapping = {
     'SocketClient': SocketClient,
-    'NMap': NMap
+    'NMap': TPNMap
 }
 
 words_dic = {

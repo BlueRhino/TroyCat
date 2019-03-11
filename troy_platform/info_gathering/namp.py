@@ -1,6 +1,8 @@
 import os
 
+from libnmap.objects import NmapReport
 from libnmap.parser import NmapParser, NmapParserException
+from libnmap.plugins.backendpluginFactory import BackendPluginFactory
 from libnmap.process import NmapProcess
 from prompt_toolkit import prompt, print_formatted_text
 from prompt_toolkit.history import FileHistory
@@ -15,29 +17,38 @@ if not os.path.exists(history_path):
 history = FileHistory(history_path + '/NMap')
 
 
-class NMap:
+class TPNMap:
     """
     NMap scanner.
     Dependencies:Nmap("Network Mapper") must be install in your OS
     and add this command to the path path.
     """
+    sql_url = 'sqlite:///db/reportdb.sql'
+    if not os.path.exists('./db'):
+        os.mkdir('./db')
 
     def __init__(self):
         self.rhosts = '127.0.0.1'
         self.options = '-sT'
+        self.back_report = False
+
         self.words_dic = {
             'show': ['options'],
             'set': {'rhosts': None,
                     'options': ['-sS', '-sT', '-sU', '-sY', '-sN', '-sF', '-sX', '-sA', '-sW',
                                 '-sM', '-sZ', '-sO',
                                 '-sP', '-sI',
-                                '-sR', '-sL', '-p 80']},
+                                '-sR', '-sL', '-p 80'],
+                    'back_report': ['False', 'True']},
             'run': None,
         }
         self.meta_dict = {
             'show': 'show info',
             'set': 'set nmap options',
             'run': 'run',
+            'rhosts': 'remote host',
+            'options': 'scan options',
+            'back_report': 'Whether to back up the scan results to the database',
             '-sS': 'TCP SYN Scan',
             '-sT': 'TCP Connect Scan',
             '-sU': 'UDP Scan',
@@ -96,6 +107,7 @@ class NMap:
                 ['\nname', '\nCurrent Setting', '\nRequired', '\nDescription'],
                 ['RHOSTS', self.rhosts, 'no', 'Default is 127.0.0.1'],
                 ['options', self.options, 'no', 'Default is -sT'],
+                ['back_report', self.back_report, 'no', 'Default False'],
             ]
             table = AsciiTable(info_table, "Module Options")
             print_formatted_text("")
@@ -112,6 +124,8 @@ class NMap:
                     self.rhosts = str(parameter_arr[1])
                 elif parameter_arr[0].lower() == 'options':
                     self.options = str(parameter_arr[1])
+                elif parameter_arr[0].lower() == 'back_report':
+                    self.back_report = bool(parameter_arr[1])
             except Exception as e:
                 print_formatted_text(e)
         else:
@@ -126,12 +140,23 @@ class NMap:
             else:
                 try:
                     report = NmapParser.parse(nm.stdout)
-                    NMap._print_report(report)
+                    TPNMap._print_report(report)
+                    if self.back_report:
+                        TPNMap._save_to_sql(report)
                 except NmapParserException as e:
                     print_formatted_text("Exception raised while parsing scan: {0}".format(e.msg))
         except Exception as e:
             print_formatted_text(e)
+        except KeyboardInterrupt:
+            print_formatted_text("User terminates scanning!")
 
+    @staticmethod
+    def _save_to_sql(report: NmapReport):
+        print_formatted_text("Back up report to database:" + TPNMap.sql_url)
+        backend_sqlite = BackendPluginFactory.create(plugin_name='sql',
+                                                     url=TPNMap.sql_url,
+                                                     echo=False)
+        report.save(backend_sqlite)
 
     @staticmethod
     def _print_report(nmap_report):
@@ -172,4 +197,4 @@ class NMap:
 
 
 if __name__ == '__main__':
-    NMap().start()
+    TPNMap().start()
